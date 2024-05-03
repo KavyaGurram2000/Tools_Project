@@ -1,0 +1,29 @@
+name: Fetch Census Data
+
+on:
+  # Trigger the workflow manually
+  workflow_dispatch:
+
+  # Trigger the workflow on push to the main branch
+  push:
+    branches:
+      - main
+
+jobs:
+  fetch-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Fetch Census Data
+      run: |
+        response=$(curl -s "https://api.census.gov/data/2019/pep/charagegroups?get=AGEGROUP,SEX,RACE,POP,HISP&for=state:*&DATE_CODE=12")
+        echo "$response" > census_data.txt
+        
+    - name: Upload Census Data
+      uses: actions/upload-artifact@v3
+      with:
+        name: census-data
+        path: census_data.txt
